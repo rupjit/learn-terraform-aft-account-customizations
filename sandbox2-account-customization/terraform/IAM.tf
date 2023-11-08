@@ -1,29 +1,22 @@
 data "aws_caller_identity" "current" {}
 
 resource "aws_iam_policy" "policy" {
-  name        = "${random_pet.pet_name.id}-policy"
+  name        = "test_policy"
+  path        = "/"
   description = "My test policy"
 
-  policy = <<EOT
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Action": [
-        "s3:ListAllMyBuckets"
-      ],
-      "Effect": "Allow",
-      "Resource": "*"
-    },
-    {
-      "Action": [
-        "s3:*"
-      ],
-      "Effect": "Allow",
-      "Resource": "${aws_s3_bucket.bucket.arn}"
-    }
-  ]
-
-}
-EOT
+  # Terraform's "jsonencode" function converts a
+  # Terraform expression result to valid JSON syntax.
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "ec2:Describe*",
+        ]
+        Effect   = "Allow"
+        Resource = "*"
+      },
+    ]
+  })
 }
